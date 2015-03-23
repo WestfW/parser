@@ -1,3 +1,8 @@
+/*
+ * parser.cpp
+ * Implement a command-line parser.
+ */
+
 #include "Arduino.h"
 #include "parser.h"
 #include <avr/pgmspace.h>
@@ -70,6 +75,68 @@ uint8_t parseGetline(void)
     } while (c != CTRL('M') && inptr < PARSER_LINELEN);
     Serial.println();			/* Echo newline too. */
     return(inptr);
+}
+
+/*
+ * parserGetline_nb
+ * Read a line of text from Serial into the internal line buffer.
+ * With echoing and editing!
+ * Non-blocking.  Returns 0 until end-of-line seen.
+ */
+void parseReset()
+{
+    /*
+     * Reset the line buffer
+     */
+    memset(linebuffer, 0, sizeof(linebuffer));
+    inptr = 0;
+    parseptr = 0;
+}
+
+uint8_t parseGetline_nb(void)
+{
+    int c;
+
+    c = Serial.read();
+    switch (c) {
+    case 127:
+    case CTRL('H'):
+	/*
+	 * Destructive backspace: remove last character
+	 */
+	if (inptr > 0) {
+	    Serial.print("\010 \010");
+	    linebuffer[--inptr] = 0;
+	}
+    break;
+    case CTRL('R'):
+	/*
+	 * Ctrl-R retypes the line
+	 */
+	Serial.print("\r\n");
+	Serial.print(linebuffer);
+	break;
+    case CTRL('U'):
+	/*
+	 * Ctrl-U deletes the entire line and starts over.
+	 */
+	Serial.println("XXX");
+	memset(linebuffer, 0, sizeof(linebuffer));
+	inptr = 0;
+	break;
+    case CTRL('M'):
+	Serial.println();			/* Echo newline too. */
+	return inptr;
+    default:
+	/*
+	 * Otherwise, echo the character and put it into the buffer
+	 */
+	linebuffer[inptr++] = c;
+	Serial.write(c);
+    case -1:
+	return 0;
+	break;
+    }
 }
 
 
@@ -164,7 +231,7 @@ char *tokcasecmp(char *tok, char *target)
 	    if (c1 != 0) {
 		return t;  // oops; both strings didn't end.
 	    }
-	    return 0;
+	    return 0; //match!
 	}
 	tok++; t++;
     } while (c1 == c2);

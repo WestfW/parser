@@ -4,6 +4,8 @@
  * API
  */
 uint8_t parseGetline(void);
+uint8_t parseGetline_nb(void);
+void parseReset(void);
 char *parseToken(void);
 int parseNumber();
 int8_t parseKeyword(const char *keys);
