@@ -1,6 +1,8 @@
 /*
  * parser.cpp
  * Implement a command-line parser.
+ * 2014 by Bill Westfield (WestfW)
+ * Released to the public domain.
  */
 
 #include "Arduino.h"
