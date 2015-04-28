@@ -1,7 +1,7 @@
 /*
  * parser.cpp
  * Implement a command-line parser.
- * 2014 by Bill Westfield (WestfW)
+ * Written 2014 by Bill Westfield (WestfW)
  * Released to the public domain.
  */
 
@@ -11,7 +11,7 @@
 #include "WString.h"
 
 char linebuffer[PARSER_LINELEN];
-static byte inptr, parseptr;
+static byte inptr, parseptr, termchar;
 
 char getcwait(void)
 {
@@ -34,9 +34,7 @@ uint8_t parseGetline(void)
     /*
      * Reset the line buffer
      */
-    memset(linebuffer, 0, sizeof(linebuffer));
-    inptr = 0;
-    parseptr = 0;
+    parseReset();
 
     do {
 	c = getcwait();
@@ -80,7 +78,7 @@ uint8_t parseGetline(void)
 }
 
 /*
- * parserGetline_nb
+ * parseGetline_nb
  * Read a line of text from Serial into the internal line buffer.
  * With echoing and editing!
  * Non-blocking.  Returns 0 until end-of-line seen.
@@ -93,6 +91,7 @@ void parseReset()
     memset(linebuffer, 0, sizeof(linebuffer));
     inptr = 0;
     parseptr = 0;
+    termchar = 0;
 }
 
 uint8_t parseGetline_nb(void)
@@ -148,7 +147,7 @@ bool parseIsWhitespace(char c)
 }
 
 
-const char parseDelimiters[] PROGMEM = "\r\n ,;:\t";
+const char parseDelimiters[] PROGMEM = "\r\n ,;:=\t";
 bool parseDelim(char c)
 {
     if (c == 0 || strchr_P(parseDelimiters, c))
@@ -160,6 +159,19 @@ int parseNumber()
 {
     return atoi(parseToken());
 }
+
+/*
+ * parseTermChar
+ * return the termination character of the last token
+ */
+uint8_t parseTermChar()
+{
+    return termchar;
+}
+
+/*
+ * parseCharacter
+ */
 
 /*
  * parseToken
@@ -182,6 +194,7 @@ char * parseToken(void)
     while ((!parseDelim(linebuffer[parseptr])) && (parseptr < PARSER_LINELEN)) {
 	parseptr++; // advance pointer till we hit a delimiter.
     }
+    termchar = linebuffer[parseptr];
     linebuffer[parseptr++] = 0;  // replace the delimiter with null
     return &linebuffer[i];  // convert position to pointer for retval
 }

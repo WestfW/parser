@@ -1,10 +1,13 @@
+/* 
+ * Written 2014 by Bill Westfield (WestfW)
+ * Released to the public domain.
+ */
 #include <parser.h>
 
 void setup() {
   while (!Serial)
     delay(500);
   Serial.begin(115200);
-  // put your setup code here, to run once:
 }
 
 int red, blue, green;

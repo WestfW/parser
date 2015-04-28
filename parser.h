@@ -1,3 +1,7 @@
+/* 
+ * Written 2014 by Bill Westfield (WestfW)
+ * Released to the public domain.
+ */
 #include "Arduino.h"
 
 /*
@@ -9,6 +13,7 @@ void parseReset(void);
 char *parseToken(void);
 int parseNumber();
 int8_t parseKeyword(const char *keys);
+
 /*
  * Constants
  */
@@ -29,5 +34,3 @@ char *tokcasecmp(char *tok, char * target);
 
 #define TOUPPER(a) (a & ~('a'-'A'))
 #define CTRL(x) (x-64)
-
-
