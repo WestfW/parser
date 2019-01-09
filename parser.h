@@ -32,5 +32,5 @@ bool parseDelim(char c);
 bool parserEOL();
 char *tokcasecmp(char *tok, char * target);
 
-#define TOUPPER(a) (a & ~('a'-'A'))
+#define TOUPPER(a) ((a >= 'a' && a <= 'z') ? (a & ~('a'-'A')) : a)
 #define CTRL(x) (x-64)

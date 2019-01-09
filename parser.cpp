@@ -128,16 +128,19 @@ uint8_t parseGetline_nb(void)
     case CTRL('M'):
 	Serial.println();			/* Echo newline too. */
 	return inptr;
+    case -1:
+	/*
+	 * No character present; don't do anything.
+	 */
+	return 0;
     default:
 	/*
 	 * Otherwise, echo the character and put it into the buffer
 	 */
 	linebuffer[inptr++] = c;
 	Serial.write(c);
-    case -1:
-	return 0;
-	break;
     }
+    return 0;
 }
 
 
