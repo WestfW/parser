@@ -34,3 +34,18 @@ char *tokcasecmp(char *tok, char * target);
 
 #define TOUPPER(a) ((a >= 'a' && a <= 'z') ? (a & ~('a'-'A')) : a)
 #define CTRL(x) (x-64)
+
+#ifdef NOT_READY
+class cmd_t {
+private:
+    static cmd_t *head;
+    const char *text;
+    void *(*func)(char *);
+    cmd_t *next;
+
+public:
+    cmd_t();
+    cmd_t(const char *t, void*(*f)(char *));
+    void dump();
+};
+#endif
